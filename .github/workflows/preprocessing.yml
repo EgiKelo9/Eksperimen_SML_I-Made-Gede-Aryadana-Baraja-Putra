@@ -4,12 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'Eksperimen_SML_I-Made-Gede-Aryadana-Baraja-Putra/**'
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   preprocess-data:
@@ -33,7 +30,7 @@ jobs:
           pip install pandas scikit-learn joblib
 
       - name: 4. Run Preprocessing Script
-        working-directory: ./Eksperimen_SML_I-Made-Gede-Aryadana-Baraja-Putra/preprocessing
+        working-directory: ./preprocessing
         run: |
           python automate_I-Made-Gede-Aryadana-Baraja-Putra.py
 
@@ -42,6 +39,6 @@ jobs:
         with:
           name: preprocessing-results
           path: |
-            Eksperimen_SML_I-Made-Gede-Aryadana-Baraja-Putra/preprocessing/pinhomedataset_preprocessing.csv
-            Eksperimen_SML_I-Made-Gede-Aryadana-Baraja-Putra/preprocessing/artifacts/
+            ./preprocessing/pinhomedataset_preprocessing.csv
+            ./preprocessing/artifacts/
           retention-days: 30
