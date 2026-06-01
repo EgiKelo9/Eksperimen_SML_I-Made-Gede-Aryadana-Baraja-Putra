@@ -1,5 +1,6 @@
 import os
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OrdinalEncoder, LabelEncoder, RobustScaler
@@ -44,12 +45,15 @@ def drop_irrelevant_columns(df):
     return df
 
 def handle_duplicates(df):
-    print("3. Menghapus data duplikat...")
+    print("4. Menghapus data duplikat...")
     df = df.drop_duplicates()
     return df
 
 def handle_missing_values(df):
-    print("4. Menangani missing values...")
+    print("3. Menangani missing values...")
+    df = df.copy()
+    df = df.replace(r'^\s*$', np.nan, regex=True)
+
     cols_to_check = ['district', 'city', 'bedrooms', 'bathrooms', 'land_size_m2', 'building_size_m2']
     
     cols_exist = [c for c in cols_to_check if c in df.columns]
@@ -61,6 +65,10 @@ def handle_missing_values(df):
     cat_exist = [c for c in categorical_features if c in df.columns]
     
     if cat_exist:
+        for col in cat_exist:
+            df[col] = df[col].astype("object").astype(str).str.strip()
+            df[col] = df[col].replace(['', 'nan', 'None', 'NaT'], np.nan)
+
         imputer_cat = SimpleImputer(strategy='most_frequent')
         df[cat_exist] = imputer_cat.fit_transform(df[cat_exist])
         
@@ -74,7 +82,7 @@ def handle_missing_values(df):
     return df
 
 def encode_categorical_variables(df):
-    print("5. Melakukan encoding variabel kategorikal...")
+    print("6. Melakukan encoding variabel kategorikal...")
     encoded_df = df.copy()
     os.makedirs(ARTIFACTS_DIR, exist_ok=True)
     
@@ -109,7 +117,7 @@ def encode_categorical_variables(df):
     return encoded_df
 
 def handle_outliers(df):
-    print("6. Menangani outliers...")
+    print("5. Menangani outliers...")
     if 'price_in_rp' in df.columns and 'bedrooms' in df.columns and 'bathrooms' in df.columns and 'building_size_m2' in df.columns and 'land_size_m2' in df.columns:
         filtered_df = df[
             (df['price_in_rp'] >= 3e8) & (df['price_in_rp'] <= 5e10) & 
